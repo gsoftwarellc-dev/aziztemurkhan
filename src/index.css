@@ -1,0 +1,232 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+@import 'tailwindcss';
+
+/*
+  SkinJago Design Tokens
+  --------------------------------------------------------------
+  Monochrome brand system: pure white surface, pure black ink.
+  Every value is a CSS variable so a dark theme can later be enabled
+  by re-mapping these on [data-theme='dark'] without touching a
+  single component.
+*/
+@theme {
+  --font-sans: 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+
+  /* Brand monochrome ramp */
+  --color-ink: #000000;
+  --color-surface: #ffffff;
+
+  --color-mono-50: #fafafa;
+  --color-mono-100: #f4f4f5;
+  --color-mono-200: #e4e4e7;
+  --color-mono-300: #d4d4d8;
+  --color-mono-400: #a1a1aa;
+  --color-mono-500: #71717a;
+  --color-mono-600: #52525b;
+  --color-mono-700: #3f3f46;
+  --color-mono-800: #27272a;
+  --color-mono-900: #18181b;
+  --color-mono-950: #09090b;
+
+  /* Semantic tokens */
+  --color-background: #ffffff;
+  --color-foreground: #000000;
+  --color-muted: #f4f4f5;
+  --color-muted-foreground: #71717a;
+  --color-border: #e4e4e7;
+  --color-ring: #000000;
+
+  /* Status colors — used sparingly, only where meaning requires it
+     (order states, stock warnings). The UI stays monochrome otherwise. */
+  --color-success: #16a34a;
+  --color-warning: #ca8a04;
+  --color-danger: #dc2626;
+  --color-info: #2563eb;
+
+  --radius-card: 0.875rem;
+
+  --shadow-elevate: 0 1px 2px 0 rgb(0 0 0 / 0.04), 0 8px 24px -8px rgb(0 0 0 / 0.10);
+  --shadow-hover: 0 2px 4px 0 rgb(0 0 0 / 0.05), 0 16px 40px -12px rgb(0 0 0 / 0.16);
+
+  --animate-marquee: marquee 40s linear infinite;
+}
+
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+@keyframes marquee-left {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+@keyframes marquee-right {
+  from { transform: translateX(-50%); }
+  to { transform: translateX(0); }
+}
+
+@keyframes accordion-down {
+  from { height: 0; opacity: 0; }
+  to { height: var(--radix-accordion-content-height); opacity: 1; }
+}
+
+@keyframes accordion-up {
+  from { height: var(--radix-accordion-content-height); opacity: 1; }
+  to { height: 0; opacity: 0; }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slide-in-right {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
+
+@keyframes slide-out-right {
+  from { transform: translateX(0); }
+  to { transform: translateX(100%); }
+}
+
+@keyframes slide-in-left {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(0); }
+}
+
+@keyframes slide-out-left {
+  from { transform: translateX(0); }
+  to { transform: translateX(-100%); }
+}
+
+@keyframes rise {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes rainbow-spin {
+  to { --rainbow-angle: 360deg; }
+}
+
+/* Expanding halo behind the WhatsApp button — draws the eye without moving
+   the button itself, so it never becomes a moving click target. */
+@keyframes wa-pulse {
+  0%   { transform: scale(1);   opacity: 0.55; }
+  70%  { transform: scale(1.9); opacity: 0; }
+  100% { transform: scale(1.9); opacity: 0; }
+}
+
+/* Periodic attention nudge: a short wiggle every few seconds. */
+@keyframes wa-nudge {
+  0%, 82%, 100% { transform: rotate(0deg) scale(1); }
+  85%  { transform: rotate(-9deg) scale(1.06); }
+  89%  { transform: rotate(9deg)  scale(1.06); }
+  93%  { transform: rotate(-6deg) scale(1.04); }
+  97%  { transform: rotate(0deg)  scale(1); }
+}
+
+@keyframes wa-tip-in {
+  0%, 100% { opacity: 0; transform: translateX(6px); }
+  8%, 46%  { opacity: 1; transform: translateX(0); }
+}
+
+/* Animated conic-gradient ring for primary CTAs. The angle is animated via a
+   registered custom property so the gradient itself rotates — animating a
+   background-image directly is not interpolatable. */
+@property --rainbow-angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+
+@utility rainbow-ring {
+  position: relative;
+  isolation: isolate;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    z-index: -1;
+    border-radius: inherit;
+    background: conic-gradient(
+      from var(--rainbow-angle),
+      #ff0040, #ff8a00, #ffd600, #14e04a,
+      #00c2ff, #6b5bff, #d94dff, #ff0040
+    );
+    animation: rainbow-spin 4s linear infinite;
+  }
+
+  /* Keeps the button face opaque so only the ring shows colour. */
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    background: var(--color-ink);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rainbow-ring::before {
+    animation: none;
+  }
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    margin: 0;
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-family: var(--font-sans);
+    font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* Tight, confident headline tracking — the premium signal in a
+     monochrome system where we have no colour to lean on. */
+  h1, h2, h3, h4 {
+    letter-spacing: -0.022em;
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-ring);
+    outline-offset: 2px;
+  }
+
+  ::selection {
+    background-color: #000000;
+    color: #ffffff;
+  }
+}
+
+@utility no-scrollbar {
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
