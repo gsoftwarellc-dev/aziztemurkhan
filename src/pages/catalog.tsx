@@ -3,6 +3,7 @@ import { useSearchParams } from 'react-router-dom'
 import { SlidersHorizontal, X } from 'lucide-react'
 import { ProductCard } from '@/components/catalog/product-card'
 import { FilterPanel } from '@/components/catalog/filter-panel'
+import { Pagination } from '@/components/catalog/pagination'
 import { Button } from '@/components/ui/button'
 import { Select } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
@@ -12,6 +13,12 @@ import { categoryLabels, rarityLabels, sortLabels } from '@/lib/labels'
 import { gameById } from '@/data/games'
 import { usePageMeta } from '@/lib/use-page-meta'
 import type { CatalogFilters, ItemCategory, Rarity, SortOption } from '@/types'
+
+/**
+ * Products per page. The grid is four columns at `xl`, so 40 fills ten rows
+ * there and stays a whole number of rows at the narrower breakpoints too.
+ */
+const PAGE_SIZE = 40
 
 /** Read filters out of the query string so catalogue links are shareable. */
 function filtersFromParams(params: URLSearchParams): CatalogFilters {
@@ -57,9 +64,35 @@ export function CatalogPage() {
   const results = useMemo(() => filterProducts(filters), [filters])
   const activeCount = countActiveFilters(filters)
 
+  const totalPages = Math.max(1, Math.ceil(results.length / PAGE_SIZE))
+
+  // Clamp the requested page into range: a stale link or a narrowed filter set
+  // must never leave the customer staring at an empty grid.
+  const requestedPage = Number(searchParams.get('halaman') ?? '1')
+  const page = Math.min(
+    Math.max(Number.isFinite(requestedPage) ? Math.trunc(requestedPage) : 1, 1),
+    totalPages,
+  )
+
+  const pageResults = useMemo(
+    () => results.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE),
+    [results, page],
+  )
+
+  /** Filter changes reset to page one — page 7 of the old result set is meaningless. */
   const applyPatch = useCallback(
     (patch: Partial<CatalogFilters>) => {
       setSearchParams(paramsFromFilters({ ...filters, ...patch }), { replace: true })
+    },
+    [filters, setSearchParams],
+  )
+
+  const goToPage = useCallback(
+    (next: number) => {
+      const params = paramsFromFilters(filters)
+      if (next > 1) params.set('halaman', String(next))
+      setSearchParams(params)
+      window.scrollTo({ top: 0, behavior: 'smooth' })
     },
     [filters, setSearchParams],
   )
@@ -118,6 +151,13 @@ export function CatalogPage() {
               <p className="text-sm text-ink tabular-nums">
                 <span className="font-medium text-ink">{results.length}</span> produk
                 ditemukan
+                {totalPages > 1 && (
+                  <span className="text-mono-500">
+                    {' '}
+                    &middot; menampilkan {(page - 1) * PAGE_SIZE + 1}&ndash;
+                    {Math.min(page * PAGE_SIZE, results.length)}
+                  </span>
+                )}
               </p>
             </div>
 
@@ -199,11 +239,15 @@ export function CatalogPage() {
           )}
 
           {results.length > 0 ? (
-            <div className="mt-6 grid grid-cols-2 gap-4 lg:grid-cols-3 xl:grid-cols-4">
-              {results.map((product) => (
-                <ProductCard key={product.id} product={product} />
-              ))}
-            </div>
+            <>
+              <div className="mt-6 grid grid-cols-2 gap-4 lg:grid-cols-3 xl:grid-cols-4">
+                {pageResults.map((product) => (
+                  <ProductCard key={product.id} product={product} />
+                ))}
+              </div>
+
+              <Pagination page={page} totalPages={totalPages} onPageChange={goToPage} />
+            </>
           ) : (
             <div className="mt-6 rounded-card border border-dashed border-mono-300 px-6 py-20 text-center">
               <p className="text-[15px] font-medium text-ink">Produk tidak ditemukan</p>
