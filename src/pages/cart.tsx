@@ -1,8 +1,10 @@
 import { Link } from 'react-router-dom'
-import { ArrowRight, Minus, Plus, ShoppingBag, Trash2 } from 'lucide-react'
+import { ArrowRight, LogIn, Minus, Plus, ShoppingBag, Trash2 } from 'lucide-react'
 import { ProductThumb } from '@/components/catalog/product-thumb'
 import { Button } from '@/components/ui/button'
 import { useCart } from '@/lib/use-cart'
+import { useAuth } from '@/lib/use-auth'
+import { REQUIRE_LOGIN_TO_CHECKOUT } from '@/lib/store-config'
 import { usePageMeta } from '@/lib/use-page-meta'
 import { formatIDR } from '@/lib/utils'
 import { SERVICE_FEE } from '@/lib/pricing'
@@ -10,6 +12,7 @@ import { SERVICE_FEE } from '@/lib/pricing'
 export function CartPage() {
   usePageMeta('Keranjang Belanja — SkinJago', 'Tinjau item di keranjang Anda sebelum checkout.')
   const { lines, subtotal, updateQuantity, removeItem } = useCart()
+  const { isAuthenticated } = useAuth()
 
   if (lines.length === 0) {
     return (
@@ -55,7 +58,7 @@ export function CartPage() {
                 to={`/produk/${line.product.slug}`}
                 className="shrink-0 overflow-hidden rounded-xl border border-mono-200"
               >
-                <ProductThumb monogram={line.product.image} imageUrl={line.product.imageUrl} alt={line.product.name} className="size-20 sm:size-24" />
+                <ProductThumb monogram={line.product.image} imageUrl={line.product.imageUrl} gameId={line.product.gameId} alt={line.product.name} className="size-20 sm:size-24" />
               </Link>
 
               <div className="flex min-w-0 flex-1 flex-col">
@@ -137,9 +140,38 @@ export function CartPage() {
               </div>
             </dl>
 
+            {/* Surface the login requirement here rather than letting the
+                customer hit an unexplained redirect at checkout. */}
+            {REQUIRE_LOGIN_TO_CHECKOUT && !isAuthenticated && (
+              <p className="mt-5 flex items-start gap-2 rounded-xl bg-mono-50 p-3 text-xs leading-relaxed text-mono-600">
+                <LogIn className="mt-0.5 size-3.5 shrink-0" />
+                <span>
+                  Anda perlu{' '}
+                  <Link
+                    to="/masuk"
+                    state={{ from: '/checkout' }}
+                    className="font-medium text-ink underline underline-offset-2"
+                  >
+                    masuk
+                  </Link>{' '}
+                  atau{' '}
+                  <Link
+                    to="/daftar"
+                    state={{ from: '/checkout' }}
+                    className="font-medium text-ink underline underline-offset-2"
+                  >
+                    membuat akun
+                  </Link>{' '}
+                  untuk menyelesaikan pesanan. Isi keranjang Anda tetap tersimpan.
+                </span>
+              </p>
+            )}
+
             <Button size="lg" asChild className="rainbow-ring mt-6 w-full">
               <Link to="/checkout">
-                Lanjut ke checkout
+                {REQUIRE_LOGIN_TO_CHECKOUT && !isAuthenticated
+                  ? 'Masuk & lanjut checkout'
+                  : 'Lanjut ke checkout'}
                 <ArrowRight className="size-4" />
               </Link>
             </Button>

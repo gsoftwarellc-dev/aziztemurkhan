@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { Mail, MessageCircle, ShieldCheck } from 'lucide-react'
+import { Mail, MessageCircle } from 'lucide-react'
 import { Logo } from './logo'
 import { games } from '@/data/games'
 import { company } from '@/data/company'
@@ -86,16 +86,7 @@ export function Footer() {
               <p>
                 NIB {company.nib} &middot; NPWP {company.npwp}
               </p>
-              <p>KBLI {company.kbli.code} &mdash; {company.kbli.title}</p>
               <p>{company.address}</p>
-            </div>
-
-            <div className="flex items-start gap-2 rounded-xl border border-mono-200 bg-surface px-4 py-3">
-              <ShieldCheck className="mt-0.5 size-4 shrink-0 text-mono-500" />
-              <p className="max-w-[16rem] text-xs leading-relaxed text-ink">
-                Pembayaran diproses melalui QRIS oleh penyedia jasa pembayaran berizin Bank
-                Indonesia.
-              </p>
             </div>
           </div>
 

@@ -49,9 +49,9 @@ export function AboutPage() {
 
         <h2>Identitas badan usaha</h2>
         <p>
-          {company.legalName} terdaftar dengan klasifikasi baku lapangan usaha KBLI{' '}
-          {company.kbli.code} &mdash; {company.kbli.title}, yang mencakup kegiatan distribusi
-          dan perantara konten digital termasuk item permainan video.
+          {company.legalName} menjalankan kegiatan usaha distribusi dan perantara konten
+          digital, mencakup skin, item dalam game, voucher, kredit permainan, dan akses
+          premium untuk pengguna di Indonesia.
         </p>
         <ul>
           <li>Nama badan usaha: {company.legalName}</li>

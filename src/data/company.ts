@@ -10,10 +10,6 @@ export const company = {
   legalName: 'PT Skin Jago Nusantara',
   nib: '0000000000000',
   npwp: '00.000.000.0-000.000',
-  kbli: {
-    code: '60390',
-    title: 'Aktivitas Situs Jejaring Sosial dan Distribusi Konten Lainnya',
-  },
   address: 'Jl. Jenderal Sudirman Kav. 52-53, Jakarta Selatan 12190, Indonesia',
   email: 'halo@skinjago.id',
   supportEmail: 'bantuan@skinjago.id',

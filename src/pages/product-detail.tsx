@@ -104,6 +104,7 @@ function ProductDetail({ slug }: { slug: string }) {
             <ProductThumb
               monogram={product.image}
               imageUrl={product.imageUrl}
+              gameId={product.gameId}
               alt={`${product.name} — ${product.gameName}`}
               size="lg"
               className="aspect-square w-full"

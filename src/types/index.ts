@@ -138,10 +138,32 @@ export interface OrderLine {
   fieldValues: Record<string, string>
 }
 
+/**
+ * A registered customer.
+ *
+ * Mirrors the planned `users` table. Note that no password material lives on
+ * this shape — the frontend store keeps a derived hash separately, and the real
+ * backend will never return credentials to the client at all.
+ */
+export interface User {
+  id: string
+  name: string
+  email: string
+  whatsapp: string
+  createdAt: string
+  /**
+   * Game IDs the customer has entered before, keyed by checkout field id, so
+   * repeat purchases can prefill. e.g. `{ 'ml-user-id': '12345678' }`
+   */
+  savedGameIds: Record<string, string>
+}
+
 export interface Order {
   id: string
   /** Public reference shown to the customer, e.g. "SJ-2K4F8L". */
   reference: string
+  /** Owning account, when the order was placed by a signed-in customer. */
+  userId?: string
   createdAt: string
   status: OrderStatus
   paymentStatus: PaymentStatus

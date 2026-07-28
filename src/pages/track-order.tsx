@@ -5,7 +5,8 @@ import { Button } from '@/components/ui/button'
 import { Input, Label } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { ProductThumb } from '@/components/catalog/product-thumb'
-import { findOrder } from '@/lib/orders'
+import { findOrder, ordersForUser } from '@/lib/orders'
+import { useAuth } from '@/lib/use-auth'
 import { orderStatusLabels, paymentMethodLabels } from '@/lib/labels'
 import { usePageMeta } from '@/lib/use-page-meta'
 import { cn, formatDateID, formatIDR } from '@/lib/utils'
@@ -21,6 +22,12 @@ export function TrackOrderPage() {
   const [reference, setReference] = useState(searchParams.get('ref') ?? '')
   const [order, setOrder] = useState<Order | undefined>()
   const [searched, setSearched] = useState(false)
+  const { user } = useAuth()
+  const [myOrders, setMyOrders] = useState<Order[]>([])
+
+  useEffect(() => {
+    setMyOrders(user ? ordersForUser(user.id) : [])
+  }, [user])
 
   useEffect(() => {
     const initial = searchParams.get('ref')
@@ -63,6 +70,42 @@ export function TrackOrderPage() {
           Lacak
         </Button>
       </form>
+
+      {/* Signed-in customers shouldn't have to dig a reference out of their
+          email — their own orders are one tap away. */}
+      {myOrders.length > 0 && !order && (
+        <section className="mt-8">
+          <h2 className="text-sm font-semibold text-ink">Pesanan Anda</h2>
+          <ul className="mt-3 flex flex-col gap-2">
+            {myOrders.slice(0, 5).map((entry) => (
+              <li key={entry.reference}>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setReference(entry.reference)
+                    setSearchParams({ ref: entry.reference })
+                    setOrder(entry)
+                    setSearched(true)
+                  }}
+                  className="flex w-full items-center justify-between gap-3 rounded-xl border border-mono-200 px-4 py-3 text-left transition-colors hover:border-mono-300 hover:bg-mono-50"
+                >
+                  <span className="min-w-0">
+                    <span className="block font-mono text-sm font-semibold text-ink">
+                      {entry.reference}
+                    </span>
+                    <span className="block text-xs text-mono-500">
+                      {formatDateID(entry.createdAt)} · {entry.lines.length} item
+                    </span>
+                  </span>
+                  <Badge variant={statusVariant(entry.status)} size="sm">
+                    {orderStatusLabels[entry.status]}
+                  </Badge>
+                </button>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
 
       {searched && !order && (
         <div className="mt-8 rounded-card border border-dashed border-mono-300 px-6 py-16 text-center">

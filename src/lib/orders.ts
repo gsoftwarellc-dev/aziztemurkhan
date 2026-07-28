@@ -43,6 +43,19 @@ export function findOrder(reference: string): Order | undefined {
   return readOrders().find((order) => order.reference.toUpperCase() === normalised)
 }
 
+/**
+ * Orders belonging to one account, newest first.
+ *
+ * Guest orders (no `userId`) are deliberately excluded: they're only reachable
+ * via their reference number on the tracking page. Once the backend lands this
+ * becomes a scoped API call rather than a client-side filter.
+ */
+export function ordersForUser(userId: string): Order[] {
+  return readOrders()
+    .filter((order) => order.userId === userId)
+    .sort((a, b) => b.createdAt.localeCompare(a.createdAt))
+}
+
 /** Build the full status timeline, marking everything up to `status` as done. */
 export function buildTimeline(status: OrderStatus, createdAt: string): OrderEvent[] {
   const happyPath: OrderStatus[] = [

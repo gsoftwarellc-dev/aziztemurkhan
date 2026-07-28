@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link, NavLink } from 'react-router-dom'
-import { Menu, ShoppingBag } from 'lucide-react'
+import { Menu, ShoppingBag, User } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { Logo } from './logo'
 import { LanguageSwitcher } from './language-switcher'
@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button'
 import { Sheet, SheetClose, SheetContent, SheetTitle, SheetTrigger } from '@/components/ui/sheet'
 import { games } from '@/data/games'
 import { useCart } from '@/lib/use-cart'
+import { useAuth } from '@/lib/use-auth'
 import { cn } from '@/lib/utils'
 
 const navigation = [
@@ -24,6 +25,7 @@ export function Header() {
   const [scrolled, setScrolled] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
   const { itemCount } = useCart()
+  const { isAuthenticated } = useAuth()
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 8)
@@ -125,10 +127,21 @@ export function Header() {
             </Link>
           </Button>
 
+          <Button variant="ghost" size="icon-sm" asChild className="relative">
+            <Link
+              to={isAuthenticated ? '/akun' : '/masuk'}
+              aria-label={isAuthenticated ? 'Akun saya' : 'Masuk ke akun'}
+            >
+              <User className="size-5" />
+            </Link>
+          </Button>
+
           <LanguageSwitcher />
 
           <Button size="sm" asChild className="hidden sm:inline-flex">
-            <Link to="/katalog">{t('nav.shop')}</Link>
+            <Link to={isAuthenticated ? '/akun' : '/masuk'}>
+              {isAuthenticated ? 'Akun' : 'Masuk'}
+            </Link>
           </Button>
         </div>
       </div>

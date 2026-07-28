@@ -6,6 +6,10 @@ import { Footer } from '@/components/layout/footer'
 import { WhatsAppButton } from '@/components/layout/whatsapp-button'
 import { ScrollToTopButton } from '@/components/layout/scroll-to-top-button'
 import { CartProvider } from '@/context/cart-context'
+import { AuthProvider } from '@/context/auth-context'
+import { RequireAuth } from '@/components/layout/require-auth'
+import { LoginPage, RegisterPage } from '@/pages/auth'
+import { AccountPage } from '@/pages/account'
 import { HomePage } from '@/pages/home'
 import { CatalogPage } from '@/pages/catalog'
 import { GamesPage } from '@/pages/games'
@@ -41,35 +45,47 @@ function ScrollToTop() {
 
 export default function App() {
   return (
-    <CartProvider>
-      <HtmlLang />
-      <ScrollToTop />
-      <div className="flex min-h-dvh flex-col">
-        <Header />
-        <main className="flex-1">
-          <Routes>
-            <Route path="/" element={<HomePage />} />
-            <Route path="/katalog" element={<CatalogPage />} />
-            <Route path="/game" element={<GamesPage />} />
-            <Route path="/game/:slug" element={<GameDetailPage />} />
-            <Route path="/produk/:slug" element={<ProductDetailPage />} />
-            <Route path="/keranjang" element={<CartPage />} />
-            <Route path="/checkout" element={<CheckoutPage />} />
-            <Route path="/pembayaran/:reference" element={<PaymentPage />} />
-            <Route path="/lacak-pesanan" element={<TrackOrderPage />} />
-            <Route path="/cara-kerja" element={<HowItWorksPage />} />
-            <Route path="/bantuan" element={<HelpPage />} />
-            <Route path="/tentang-kami" element={<AboutPage />} />
-            <Route path="/syarat-ketentuan" element={<TermsPage />} />
-            <Route path="/kebijakan-privasi" element={<PrivacyPage />} />
-            <Route path="/kebijakan-pengembalian" element={<RefundPage />} />
-            <Route path="*" element={<NotFoundPage />} />
-          </Routes>
-        </main>
-        <Footer />
-        <WhatsAppButton />
-        <ScrollToTopButton />
-      </div>
-    </CartProvider>
+    <AuthProvider>
+      <CartProvider>
+        <HtmlLang />
+        <ScrollToTop />
+        <div className="flex min-h-dvh flex-col">
+          <Header />
+          <main className="flex-1">
+            <Routes>
+              <Route path="/" element={<HomePage />} />
+              <Route path="/katalog" element={<CatalogPage />} />
+              <Route path="/game" element={<GamesPage />} />
+              <Route path="/game/:slug" element={<GameDetailPage />} />
+              <Route path="/produk/:slug" element={<ProductDetailPage />} />
+              <Route path="/keranjang" element={<CartPage />} />
+              <Route path="/checkout" element={<CheckoutPage />} />
+              <Route path="/pembayaran/:reference" element={<PaymentPage />} />
+              <Route path="/lacak-pesanan" element={<TrackOrderPage />} />
+              <Route path="/masuk" element={<LoginPage />} />
+              <Route path="/daftar" element={<RegisterPage />} />
+              <Route
+                path="/akun"
+                element={
+                  <RequireAuth>
+                    <AccountPage />
+                  </RequireAuth>
+                }
+              />
+              <Route path="/cara-kerja" element={<HowItWorksPage />} />
+              <Route path="/bantuan" element={<HelpPage />} />
+              <Route path="/tentang-kami" element={<AboutPage />} />
+              <Route path="/syarat-ketentuan" element={<TermsPage />} />
+              <Route path="/kebijakan-privasi" element={<PrivacyPage />} />
+              <Route path="/kebijakan-pengembalian" element={<RefundPage />} />
+              <Route path="*" element={<NotFoundPage />} />
+            </Routes>
+          </main>
+          <Footer />
+          <WhatsAppButton />
+          <ScrollToTopButton />
+        </div>
+      </CartProvider>
+    </AuthProvider>
   )
 }

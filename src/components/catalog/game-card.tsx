@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { ArrowUpRight } from 'lucide-react'
+import { identityForGame } from '@/data/product-images'
 import { cn } from '@/lib/utils'
 import type { Game } from '@/types'
 
@@ -16,6 +17,7 @@ export function GameCard({
   featured?: boolean
 }) {
   const [failed, setFailed] = useState(false)
+  const identity = identityForGame(game.id)
 
   return (
     <Link
@@ -24,9 +26,12 @@ export function GameCard({
     >
       <div
         className={cn(
-          'relative w-full overflow-hidden bg-mono-100',
+          'relative w-full overflow-hidden',
           featured ? 'aspect-[16/10]' : 'aspect-[16/11]',
         )}
+        style={{
+          backgroundImage: `linear-gradient(135deg, ${identity.from}, ${identity.to})`,
+        }}
       >
         {game.coverUrl && !failed && (
           <img
@@ -35,12 +40,12 @@ export function GameCard({
             loading="lazy"
             decoding="async"
             onError={() => setFailed(true)}
-            className="size-full object-cover grayscale transition-all duration-500 group-hover:scale-[1.04] group-hover:grayscale-0"
+            className="size-full object-cover transition-transform duration-500 group-hover:scale-[1.04]"
           />
         )}
 
-        {/* Ink scrim keeps the white monogram legible over any photo. */}
-        <div className="absolute inset-0 bg-gradient-to-t from-ink/85 via-ink/35 to-ink/10" />
+        {/* Ink scrim keeps the white title legible over art or gradient alike. */}
+        <div className="absolute inset-0 bg-gradient-to-t from-ink/85 via-ink/30 to-transparent" />
 
         <div className="absolute inset-0 flex flex-col justify-between p-4">
           <div className="flex items-start justify-between">

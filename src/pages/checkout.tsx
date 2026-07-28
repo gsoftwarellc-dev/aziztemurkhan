@@ -1,10 +1,12 @@
-import { useMemo, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { useEffect, useMemo, useState } from 'react'
+import { Link, Navigate, useNavigate } from 'react-router-dom'
 import { ArrowRight, Info, Lock } from 'lucide-react'
 import { ProductThumb } from '@/components/catalog/product-thumb'
 import { Button } from '@/components/ui/button'
 import { Input, Label, Select } from '@/components/ui/input'
 import { useCart } from '@/lib/use-cart'
+import { useAuth } from '@/lib/use-auth'
+import { REQUIRE_LOGIN_TO_CHECKOUT } from '@/lib/store-config'
 import { usePageMeta } from '@/lib/use-page-meta'
 import { formatIDR } from '@/lib/utils'
 import { SERVICE_FEE } from '@/lib/pricing'
@@ -22,12 +24,33 @@ export function CheckoutPage() {
 
   const navigate = useNavigate()
   const { lines, subtotal, clearCart } = useCart()
+  const { user, isAuthenticated, ready, rememberGameIds } = useAuth()
   const [values, setValues] = useState<Record<string, string>>({})
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [method, setMethod] = useState<PaymentMethodId>('qris')
   const [submitting, setSubmitting] = useState(false)
 
   const total = subtotal + SERVICE_FEE
+
+  /**
+   * Prefill from the signed-in profile: contact details from the account, and
+   * game IDs the customer entered on a previous order. Only fills blanks, so
+   * it never overwrites something typed during this session.
+   */
+  useEffect(() => {
+    if (!user) return
+    setValues((current) => {
+      const next = { ...current }
+      const emailKey = fieldKey('order', undefined, 'email')
+      const whatsappKey = fieldKey('order', undefined, 'whatsapp')
+      if (!next[emailKey]) next[emailKey] = user.email
+      if (!next[whatsappKey]) next[whatsappKey] = user.whatsapp
+      for (const [key, value] of Object.entries(user.savedGameIds)) {
+        if (!next[key]) next[key] = value
+      }
+      return next
+    })
+  }, [user])
 
   /**
    * Contact fields (email/WhatsApp) are shared across the whole order, while
@@ -39,6 +62,22 @@ export function CheckoutPage() {
       .filter((field) => field.id === 'email' || field.id === 'whatsapp')
     return Array.from(new Map(found.map((field) => [field.id, field])).values())
   }, [lines])
+
+  // Wait for the session read before gating, so a refresh on /checkout doesn't
+  // bounce a signed-in customer to the login page.
+  if (REQUIRE_LOGIN_TO_CHECKOUT && !ready) {
+    return (
+      <div className="mx-auto max-w-md px-4 py-24 text-center" aria-busy>
+        <p className="text-sm text-mono-500">Memuat…</p>
+      </div>
+    )
+  }
+
+  // The cart is untouched by this redirect, so the customer returns to a full
+  // basket after signing in.
+  if (REQUIRE_LOGIN_TO_CHECKOUT && !isAuthenticated) {
+    return <Navigate to="/masuk" replace state={{ from: '/checkout' }} />
+  }
 
   if (lines.length === 0) {
     return (
@@ -108,6 +147,7 @@ export function CheckoutPage() {
     const order: Order = {
       id: reference,
       reference,
+      userId: user?.id,
       createdAt,
       status: 'menunggu-pembayaran',
       paymentStatus: 'pending',
@@ -135,6 +175,22 @@ export function CheckoutPage() {
       serviceFee: SERVICE_FEE,
       total,
       timeline: buildTimeline('menunggu-pembayaran', createdAt),
+    }
+
+    // Keep the game IDs on the profile so the next order prefills them.
+    if (user) {
+      const gameIdValues = Object.fromEntries(
+        lines.flatMap((line) =>
+          line.product.checkoutFields
+            .filter((field) => field.id !== 'email' && field.id !== 'whatsapp')
+            .map((field) => {
+              const key = fieldKey(line.productId, line.variantId, field.id)
+              return [key, values[key] ?? '']
+            })
+            .filter(([, value]) => value !== ''),
+        ),
+      )
+      rememberGameIds(gameIdValues)
     }
 
     saveOrder(order)
@@ -185,6 +241,7 @@ export function CheckoutPage() {
                 <div className="flex items-start gap-3">
                   <ProductThumb
                     monogram={line.product.image}
+                    gameId={line.product.gameId}
                     className="size-11 shrink-0 rounded-lg"
                   />
                   <div className="min-w-0">
@@ -308,7 +365,34 @@ export function CheckoutPage() {
               </div>
             </dl>
 
-            <Button type="submit" size="lg" disabled={submitting} className="rainbow-ring mt-6 w-full">
+            {/* Purchase consent — must sit immediately before the purchase
+                button so agreement is unambiguous at the point of sale. */}
+            <p className="mt-6 text-xs leading-relaxed text-mono-600">
+              Dengan melakukan pembelian, Anda menyetujui{' '}
+              <Link
+                to="/syarat-ketentuan"
+                className="font-medium text-ink underline underline-offset-2"
+              >
+                Syarat &amp; Ketentuan
+              </Link>
+              ,{' '}
+              <Link
+                to="/kebijakan-privasi"
+                className="font-medium text-ink underline underline-offset-2"
+              >
+                Kebijakan Privasi
+              </Link>
+              , dan{' '}
+              <Link
+                to="/kebijakan-pengembalian"
+                className="font-medium text-ink underline underline-offset-2"
+              >
+                Kebijakan Pengembalian Dana
+              </Link>{' '}
+              SkinJago.
+            </p>
+
+            <Button type="submit" size="lg" disabled={submitting} className="rainbow-ring mt-4 w-full">
               {submitting ? 'Memproses...' : 'Buat pesanan'}
               {!submitting && <ArrowRight className="size-4" />}
             </Button>

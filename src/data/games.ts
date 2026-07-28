@@ -1,15 +1,16 @@
 import type { Game } from '@/types'
-
-const cover = (id: string) =>
-  `https://images.unsplash.com/photo-${id}?auto=format&fit=crop&w=900&q=70`
+import { products } from './products'
 
 /**
  * Launch catalogue of games. Ordered by popularity in the Indonesian market.
- * Logos are rendered as monogram tiles in the UI, so `logo` holds the monogram
- * text rather than an asset path — keeps the build free of licensed artwork
- * until the client supplies official brand assets.
+ *
+ * `logo` holds the monogram rendered on the identity tile. `coverUrl` points at
+ * a licensed cover asset in `public/games/` once the client supplies one — set
+ * it per game as artwork arrives; games without it fall back to their identity
+ * gradient from `product-images.ts`, which is a designed state rather than a
+ * placeholder.
  */
-export const games: Game[] = [
+const gameDefinitions: Omit<Game, 'productCount'>[] = [
   {
     id: 'ml',
     slug: 'mobile-legends',
@@ -18,8 +19,6 @@ export const games: Game[] = [
     tagline: 'Skin epik, diamond, dan starlight member',
     logo: 'ML',
     cover: 'from-mono-900 to-mono-700',
-    coverUrl: cover('1542751371-adc38448a05e'),
-    productCount: 48,
     featured: true,
   },
   {
@@ -30,8 +29,6 @@ export const games: Game[] = [
     tagline: 'Bundle, diamond, dan item eksklusif',
     logo: 'FF',
     cover: 'from-mono-800 to-mono-600',
-    coverUrl: cover('1493711662062-fa541adb3fc8'),
-    productCount: 36,
     featured: true,
   },
   {
@@ -42,8 +39,6 @@ export const games: Game[] = [
     tagline: 'UC, Royale Pass, dan skin senjata',
     logo: 'PM',
     cover: 'from-mono-950 to-mono-800',
-    coverUrl: cover('1519669556878-63bdad8a1a49'),
-    productCount: 29,
     featured: true,
   },
   {
@@ -54,8 +49,6 @@ export const games: Game[] = [
     tagline: 'Skin senjata, knife, dan sarung tangan',
     logo: 'CS',
     cover: 'from-mono-900 to-mono-600',
-    coverUrl: cover('1584735174914-6b1eb0d0d8b2'),
-    productCount: 52,
     featured: true,
   },
   {
@@ -66,8 +59,6 @@ export const games: Game[] = [
     tagline: 'Valorant Point dan bundle skin',
     logo: 'VL',
     cover: 'from-mono-800 to-mono-950',
-    coverUrl: cover('1542751110-97427bbecf20'),
-    productCount: 24,
     featured: true,
   },
   {
@@ -78,8 +69,6 @@ export const games: Game[] = [
     tagline: 'Genesis Crystal dan Blessing bulanan',
     logo: 'GI',
     cover: 'from-mono-700 to-mono-900',
-    coverUrl: cover('1518709268805-4e9042af9f23'),
-    productCount: 18,
     featured: true,
   },
   {
@@ -90,8 +79,6 @@ export const games: Game[] = [
     tagline: 'Robux dan langganan Premium',
     logo: 'RB',
     cover: 'from-mono-600 to-mono-900',
-    coverUrl: cover('1633988354540-d3f4e97c67b5'),
-    productCount: 15,
     featured: false,
   },
   {
@@ -102,11 +89,27 @@ export const games: Game[] = [
     tagline: 'Token dan skin hero pilihan',
     logo: 'HK',
     cover: 'from-mono-900 to-mono-950',
-    coverUrl: cover('1560253023-3ec5d502959f'),
-    productCount: 12,
     featured: false,
   },
 ]
+
+/**
+ * Product counts are derived from the actual catalogue, never hardcoded.
+ *
+ * These numbers appear in the sidebar filter and on game cards, so a hardcoded
+ * value drifts the moment the catalogue changes — which is exactly what caused
+ * the sidebar to advertise 52 Counter-Strike items while search returned 3.
+ * Counting the real array means the figure cannot disagree with the results.
+ */
+const countsByGame = products.reduce<Record<string, number>>((counts, product) => {
+  counts[product.gameId] = (counts[product.gameId] ?? 0) + 1
+  return counts
+}, {})
+
+export const games: Game[] = gameDefinitions.map((game) => ({
+  ...game,
+  productCount: countsByGame[game.id] ?? 0,
+}))
 
 export const gameById = new Map(games.map((game) => [game.id, game]))
 export const gameBySlug = new Map(games.map((game) => [game.slug, game]))

@@ -1,5 +1,6 @@
 import type { Product } from '@/types'
 import { productImages } from './product-images'
+import { generatedProducts } from './generated-products'
 import {
   accountLoginFields,
   contactFields,
@@ -12,11 +13,22 @@ import {
 } from './checkout-fields'
 
 /**
- * Launch catalogue. Prices are realistic IDR values for the Indonesian market.
- * `image` holds a short monogram used by the ProductThumb component — no
- * licensed game artwork ships with the frontend.
+ * Launch catalogue.
+ *
+ * Prices are market *reference* values checked on 2026-07-28 — see
+ * `pricing-sources.ts` for the source behind each figure. They are not final
+ * selling prices: the business must apply its own margin over supplier cost.
+ * CS2 entries track a live float market and go stale within days.
+ *
+ * `image` holds a short monogram used as the ProductThumb fallback; real
+ * artwork is resolved through `product-images.ts`.
  */
-export const products: Product[] = [
+/**
+ * Hand-written flagship listings. These carry bespoke Indonesian copy and are
+ * the ones surfaced as featured/popular on the homepage. Catalogue depth comes
+ * from `generated-products.ts`, merged into `products` at the foot of the file.
+ */
+const curatedProducts: Product[] = [
   {
     id: 'p-ml-starlight',
     slug: 'mobile-legends-starlight-member',
@@ -61,7 +73,7 @@ export const products: Product[] = [
       'Legal dan resmi lewat distributor terpercaya',
     ],
     image: '568',
-    price: 142000,
+    price: 149000,
     availability: 'tersedia',
     stock: 340,
     deliveryMethod: 'otomatis',
@@ -72,11 +84,12 @@ export const products: Product[] = [
     featured: true,
     popular: true,
     variants: [
-      { id: 'v-86', name: '86 Diamond', price: 22000, availability: 'tersedia', stock: 500 },
-      { id: 'v-172', name: '172 Diamond', price: 44000, availability: 'tersedia', stock: 480 },
-      { id: 'v-257', name: '257 Diamond', price: 65000, availability: 'tersedia', stock: 410 },
-      { id: 'v-568', name: '568 Diamond', price: 142000, availability: 'tersedia', stock: 340 },
-      { id: 'v-1167', name: '1167 Diamond', price: 285000, availability: 'stok-menipis', stock: 12 },
+      // ≈ Rp 270/diamond, tapering with pack size (Codashop ID, 2026-07-28).
+      { id: 'v-86', name: '86 Diamond', price: 24000, availability: 'tersedia', stock: 500 },
+      { id: 'v-172', name: '172 Diamond', price: 47000, availability: 'tersedia', stock: 480 },
+      { id: 'v-257', name: '257 Diamond', price: 69000, availability: 'tersedia', stock: 410 },
+      { id: 'v-568', name: '568 Diamond', price: 149000, availability: 'tersedia', stock: 340 },
+      { id: 'v-1167', name: '1167 Diamond', price: 296000, availability: 'stok-menipis', stock: 12 },
     ],
     checkoutFields: [...mobileLegendsFields, ...contactFields],
     createdAt: '2026-05-18T08:00:00+07:00',
@@ -97,8 +110,9 @@ export const products: Product[] = [
       'Proses gifting aman oleh admin terverifikasi',
     ],
     image: 'GU',
-    price: 899000,
-    compareAtPrice: 1050000,
+    // Legend skins run ~2.749 diamonds × ~Rp 270 ≈ Rp 742.000 at the ML rate.
+    price: 742000,
+    compareAtPrice: 895000,
     availability: 'stok-menipis',
     stock: 4,
     deliveryMethod: 'manual',
@@ -126,8 +140,9 @@ export const products: Product[] = [
       'Harga termurah untuk pembelian rutin',
     ],
     image: '1K',
-    price: 139000,
-    compareAtPrice: 155000,
+    // Tripay/Lapakgaming: 1.060 dm ≈ Rp 159.000 (2026-07-28); 1.000 pro-rated.
+    price: 150000,
+    compareAtPrice: 165000,
     availability: 'tersedia',
     stock: 260,
     deliveryMethod: 'otomatis',
@@ -141,18 +156,18 @@ export const products: Product[] = [
       {
         id: 'v-100',
         name: '100 Diamond',
-        price: 15000,
-        compareAtPrice: 17000,
+        price: 16000,
+        compareAtPrice: 18000,
         availability: 'tersedia',
         stock: 600,
       },
-      { id: 'v-310', name: '310 Diamond', price: 45000, availability: 'tersedia', stock: 520 },
-      { id: 'v-520', name: '520 Diamond', price: 74000, availability: 'tersedia', stock: 400 },
+      { id: 'v-310', name: '310 Diamond', price: 49000, availability: 'tersedia', stock: 520 },
+      { id: 'v-520', name: '520 Diamond', price: 79000, availability: 'tersedia', stock: 400 },
       {
         id: 'v-1000',
         name: '1.000 Diamond',
-        price: 139000,
-        compareAtPrice: 155000,
+        price: 150000,
+        compareAtPrice: 165000,
         availability: 'tersedia',
         stock: 260,
       },
@@ -203,8 +218,8 @@ export const products: Product[] = [
       'Pengisian otomatis nonstop',
     ],
     image: 'UC',
-    price: 379000,
-    compareAtPrice: 420000,
+    price: 405000,
+    compareAtPrice: 445000,
     availability: 'tersedia',
     stock: 140,
     deliveryMethod: 'otomatis',
@@ -215,10 +230,11 @@ export const products: Product[] = [
     featured: true,
     popular: true,
     variants: [
-      { id: 'v-60', name: '60 UC', price: 15000, availability: 'tersedia', stock: 500 },
-      { id: 'v-325', name: '325 UC', price: 72000, availability: 'tersedia', stock: 380 },
-      { id: 'v-660', name: '660 UC', price: 145000, availability: 'tersedia', stock: 300 },
-      { id: 'v-1800', name: '1.800 UC', price: 379000, availability: 'tersedia', stock: 140 },
+      // ≈ Rp 300/UC for the Indonesia region (Midasbuy/VCGamers, 2026-07-28).
+      { id: 'v-60', name: '60 UC', price: 16000, availability: 'tersedia', stock: 500 },
+      { id: 'v-325', name: '325 UC', price: 79000, availability: 'tersedia', stock: 380 },
+      { id: 'v-660', name: '660 UC', price: 155000, availability: 'tersedia', stock: 300 },
+      { id: 'v-1800', name: '1.800 UC', price: 405000, availability: 'tersedia', stock: 140 },
     ],
     checkoutFields: [...pubgFields, ...contactFields],
     createdAt: '2026-05-30T08:00:00+07:00',
@@ -239,8 +255,9 @@ export const products: Product[] = [
       'Sudah melewati verifikasi keaslian item',
     ],
     image: 'KR',
-    price: 14500000,
-    compareAtPrice: 16200000,
+    // USD 1.222,55 lowest market (CSMarketCap, 2026-07-28) × 17.950.
+    price: 21945000,
+    compareAtPrice: 24100000,
     availability: 'stok-menipis',
     stock: 2,
     deliveryMethod: 'trade-url',
@@ -269,7 +286,9 @@ export const products: Product[] = [
       'Trade langsung tanpa perantara pihak ketiga',
     ],
     image: 'AK',
-    price: 485000,
+    // USD 23,29 lowest market (CSMarketCap, 2026-07-28) × 17.950 ≈ Rp 418.000.
+    price: 418000,
+    compareAtPrice: 505000,
     availability: 'tersedia',
     stock: 9,
     deliveryMethod: 'trade-url',
@@ -298,7 +317,8 @@ export const products: Product[] = [
       'Verifikasi float sebelum pengiriman',
     ],
     image: 'SG',
-    price: 22800000,
+    // USD ~1.470 mid-market MW (SteamAnalyst/Skin.Land, 2026-07-28) × 17.950.
+    price: 26385000,
     availability: 'pre-order',
     stock: 0,
     deliveryMethod: 'trade-url',
@@ -326,8 +346,9 @@ export const products: Product[] = [
       'Diproses cepat oleh admin siaga',
     ],
     image: 'VP',
-    price: 259000,
-    compareAtPrice: 280000,
+    // Codashop ID lists 2.050 VP from Rp 224.000 (2026-07-28).
+    price: 224000,
+    compareAtPrice: 259000,
     availability: 'tersedia',
     stock: 88,
     deliveryMethod: 'manual',
@@ -356,7 +377,9 @@ export const products: Product[] = [
       'Termasuk kartu pemain dan spray',
     ],
     image: 'BD',
-    price: 1150000,
+    // Premium bundles run ~7.100 VP × ~Rp 110 ≈ Rp 781.000 at the VP rate.
+    price: 781000,
+    compareAtPrice: 890000,
     availability: 'tersedia',
     stock: 16,
     deliveryMethod: 'manual',
@@ -384,8 +407,8 @@ export const products: Product[] = [
       'Cukup UID dan pilihan server',
     ],
     image: 'GC',
-    price: 1499000,
-    compareAtPrice: 1620000,
+    price: 1645000,
+    compareAtPrice: 1790000,
     availability: 'tersedia',
     stock: 45,
     deliveryMethod: 'otomatis',
@@ -396,10 +419,11 @@ export const products: Product[] = [
     featured: true,
     popular: true,
     variants: [
+      // ≈ Rp 254/crystal, 60 crystals from ~Rp 11.141 (Lapakgaming/eXPay, 2026-07-28).
       { id: 'v-60', name: '60 Crystal', price: 16000, availability: 'tersedia', stock: 400 },
-      { id: 'v-330', name: '330 Crystal', price: 79000, availability: 'tersedia', stock: 300 },
-      { id: 'v-1090', name: '1.090 Crystal', price: 255000, availability: 'tersedia', stock: 180 },
-      { id: 'v-6480', name: '6.480 Crystal', price: 1499000, availability: 'tersedia', stock: 45 },
+      { id: 'v-330', name: '330 Crystal', price: 84000, availability: 'tersedia', stock: 300 },
+      { id: 'v-1090', name: '1.090 Crystal', price: 277000, availability: 'tersedia', stock: 180 },
+      { id: 'v-6480', name: '6.480 Crystal', price: 1645000, availability: 'tersedia', stock: 45 },
     ],
     checkoutFields: [...genshinFields, ...contactFields],
     createdAt: '2026-06-20T08:00:00+07:00',
@@ -447,7 +471,9 @@ export const products: Product[] = [
       'Tanpa perlu kata sandi akun',
     ],
     image: 'RX',
-    price: 265000,
+    // Roblox official USD 19,99 for 1.700 Robux ≈ Rp 320.000 (2026-07-28).
+    price: 320000,
+    compareAtPrice: 355000,
     availability: 'tersedia',
     stock: 70,
     deliveryMethod: 'manual',
@@ -577,9 +603,18 @@ export const products: Product[] = [
   },
 ]
 
-// Attach placeholder imagery. Kept as a post-processing step so the catalogue
-// definitions above stay focused on commercial data, and so swapping in the
-// client's licensed artwork is a single-file change.
+/**
+ * Full catalogue: curated listings first, then generated depth.
+ *
+ * Everything downstream (catalogue filters, search, game pages, counts) reads
+ * this single array, so replacing `generatedProducts` with a real supplier
+ * import changes nothing else in the app.
+ */
+export const products: Product[] = [...curatedProducts, ...generatedProducts]
+
+// Attach imagery. Kept as a post-processing step so the catalogue definitions
+// above stay focused on commercial data, and so swapping in the client's
+// licensed artwork is a single-file change.
 for (const product of products) {
   product.imageUrl = productImages[product.id]
 }

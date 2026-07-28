@@ -33,6 +33,7 @@ export function ProductCard({ product }: { product: Product }) {
         <ProductThumb
           monogram={product.image}
           imageUrl={product.imageUrl}
+          gameId={product.gameId}
           alt={`${product.name} — ${product.gameName}`}
           className="size-full"
         />
