@@ -248,7 +248,7 @@ const curatedProducts: Product[] = [
     category: 'skin',
     rarity: 'mythic',
     description:
-      'Pisau Karambit Doppler Factory New dengan pola fase biru. Dikirim melalui penawaran trade Steam resmi dari inventaris terverifikasi kami.',
+      'Pisau Karambit Doppler Factory New dengan pola fase biru. Item disiapkan setelah pembayaran dikonfirmasi, lalu dikirim melalui penawaran trade Steam resmi. Item Steam dapat terkena masa tunggu trade hingga 7 hari.',
     highlights: [
       'Kondisi Factory New, pola fase biru',
       'Dikirim lewat Steam trade offer resmi',
@@ -261,7 +261,9 @@ const curatedProducts: Product[] = [
     availability: 'stok-menipis',
     stock: 2,
     deliveryMethod: 'trade-url',
-    estimatedDelivery: '15 - 60 menit',
+    // Sourced after the order is placed, so a Steam trade hold of up to 7 days
+    // sits between payment and delivery. See generated-products.ts.
+    estimatedDelivery: '1 - 7 hari',
     rating: 5,
     reviewCount: 64,
     soldCount: 118,
@@ -292,7 +294,9 @@ const curatedProducts: Product[] = [
     availability: 'tersedia',
     stock: 9,
     deliveryMethod: 'trade-url',
-    estimatedDelivery: '15 - 60 menit',
+    // Sourced after the order is placed, so a Steam trade hold of up to 7 days
+    // sits between payment and delivery. See generated-products.ts.
+    estimatedDelivery: '1 - 7 hari',
     rating: 4.9,
     reviewCount: 231,
     soldCount: 980,

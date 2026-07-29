@@ -345,7 +345,7 @@ function cs2Products(): Product[] {
         gameName: 'Counter-Strike 2',
         category: 'skin',
         rarity: line.rarity,
-        description: `${line.weapon} | ${line.skin} kondisi ${wear.name}. Item dikirim melalui penawaran trade Steam resmi dari inventaris terverifikasi kami setelah pembayaran dikonfirmasi.`,
+        description: `${line.weapon} | ${line.skin} kondisi ${wear.name}. Item disiapkan setelah pembayaran dikonfirmasi, lalu dikirim melalui penawaran trade Steam resmi. Item Steam dapat terkena masa tunggu trade (trade hold) hingga 7 hari sebelum dapat kami kirimkan.`,
         highlights: [
           `Kondisi ${wear.name}`,
           'Dikirim lewat Steam trade offer resmi',
@@ -354,7 +354,10 @@ function cs2Products(): Product[] {
         image: line.weapon.slice(0, 2).toUpperCase(),
         price: tidyPrice(line.usd * wear.factor * USD_TO_IDR),
         deliveryMethod: 'trade-url',
-        estimatedDelivery: '15 - 60 menit',
+        // Client sources CS2 items after the order is placed, so a Steam trade
+        // hold of up to 7 days sits between payment and delivery. Advertising
+        // 15-60 minutes here would be a promise the fulfilment model cannot keep.
+        estimatedDelivery: '1 - 7 hari',
         checkoutFields: [...steamTradeFields, ...contactFields],
       })
     })

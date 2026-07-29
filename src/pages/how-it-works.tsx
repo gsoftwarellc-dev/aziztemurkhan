@@ -67,9 +67,9 @@ const deliveryModes = [
   },
   {
     key: 'trade-url' as const,
-    time: '15 - 60 menit',
+    time: '1 - 7 hari',
     description:
-      'Item dikirim sebagai penawaran trade Steam dari inventaris terverifikasi kami. Pastikan inventaris Anda publik.',
+      'Item disiapkan setelah pembayaran dikonfirmasi, lalu dikirim sebagai penawaran trade Steam. Item Steam dapat terkena masa tunggu trade hingga 7 hari sebelum dapat dikirim. Pastikan inventaris Anda publik.',
     examples: 'Skin Counter-Strike 2, knife, sarung tangan',
   },
 ]
