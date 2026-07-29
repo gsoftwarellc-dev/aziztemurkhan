@@ -15,11 +15,25 @@ const LAST_UPDATED = '28 Juli 2026'
  * generic boilerplate.
  *
  * Every clause marked [PERLU KONFIRMASI] contains a commitment the business
- * must verify or replace — response windows, retention periods, the refund
- * window, and the dispute venue. Do not launch with those markers still
- * visible. An Indonesian lawyer should review the final text against UU PDP
- * (27/2022), UU ITE, UU Perlindungan Konsumen (8/1999), and PP 80/2019 on
- * e-commerce.
+ * must verify or replace. Do not launch with those markers still visible. An
+ * Indonesian lawyer should review the final text against UU PDP (27/2022), UU
+ * ITE, UU Perlindungan Konsumen (8/1999), UU KUP, and PP 80/2019.
+ *
+ * CLIENT ANSWERS RECEIVED 2026-07-29 — applied:
+ * - Support response time: 36 hours (also used for data-subject requests).
+ * - Dispute: first raised by email, per the client's answer.
+ *
+ * NOT applied — the client's answers cannot be used as given, and each is
+ * still marked in place with the reason:
+ * - Retention "about 2 days": transaction records must be kept 10 years under
+ *   UU KUP, and 2 days would make refund verification impossible. The question
+ *   needs splitting into transaction data vs personal data.
+ * - Refund window "12 hours": contradicts the client's own 36-hour response
+ *   time — a customer cannot receive a reply before the window closes.
+ * - Dispute "via email": email is a contact channel, not a dispute forum. The
+ *   clause must name BPSK or a competent district court.
+ * - CS2 "buy after order": the item can sit in a Steam trade hold for up to 7
+ *   days, so the advertised 15-60 minute delivery estimate is unachievable.
  */
 
 /** Renders an inline marker for facts the business must confirm. */
@@ -139,8 +153,15 @@ export function TermsPage() {
           </li>
           <li>
             <strong>Trade URL</strong> — item Counter-Strike 2 dikirim melalui penawaran trade
-            Steam resmi, umumnya dalam 15 sampai 60 menit. Anda wajib menerima penawaran trade
-            tersebut dalam waktu{' '}
+            Steam resmi.{' '}
+            <Confirm>
+              estimasi waktu pengiriman item CS2. Klien menyatakan item dibeli setelah pesanan
+              masuk, sehingga item dapat terkena Steam trade hold hingga 7 hari sebelum dapat
+              dikirim. Estimasi 15&ndash;60 menit yang tercantum pada halaman produk tidak
+              dapat dipenuhi dengan model ini — estimasi harus diperpanjang, atau item
+              disimpan lebih dulu sebagai inventaris
+            </Confirm>{' '}
+            Anda wajib menerima penawaran trade tersebut dalam waktu{' '}
             <Confirm>batas waktu penerimaan trade offer, misalnya 24 jam</Confirm>. Penawaran
             yang tidak diterima dalam batas waktu akan dibatalkan.
           </li>
@@ -184,16 +205,17 @@ export function TermsPage() {
         <p>
           Sampaikan keluhan melalui WhatsApp {company.whatsapp} atau email{' '}
           {company.supportEmail} dengan menyertakan nomor referensi pesanan. Kami menanggapi
-          keluhan dalam waktu{' '}
-          <Confirm>waktu tanggap keluhan yang disanggupi, misalnya 1x24 jam kerja</Confirm> dan
-          menyelesaikan pemeriksaan dalam waktu{' '}
-          <Confirm>waktu penyelesaian, misalnya maksimal 7 hari kerja</Confirm>.
+          keluhan dalam waktu <strong>36 jam</strong> sejak keluhan diterima.
         </p>
         <p>
-          Apabila penyelesaian secara musyawarah tidak tercapai, sengketa diselesaikan melalui{' '}
+          Penyelesaian sengketa diupayakan terlebih dahulu secara musyawarah melalui email{' '}
+          {company.supportEmail}. Apabila kesepakatan tidak tercapai, sengketa diselesaikan
+          melalui{' '}
           <Confirm>
-            forum penyelesaian sengketa yang dipilih: BPSK, pengadilan negeri tempat kedudukan
-            perusahaan, atau arbitrase
+            forum penyelesaian sengketa formal. &quot;Melalui email&quot; adalah saluran
+            komunikasi, bukan forum penyelesaian sengketa — klausul ini harus menyebut BPSK
+            atau pengadilan negeri yang berwenang. Konsumen tetap berhak mengajukan sengketa
+            ke BPSK menurut UU 8/1999 terlepas dari isi klausul ini
           </Confirm>
           . Ketentuan ini tunduk pada hukum Republik Indonesia.
         </p>
@@ -298,7 +320,13 @@ export function PrivacyPage() {
         <h2>5. Penyimpanan dan masa retensi</h2>
         <p>
           Data transaksi disimpan selama{' '}
-          <Confirm>masa retensi data transaksi, umumnya mengikuti kewajiban pembukuan</Confirm>{' '}
+          <Confirm>
+            masa retensi data transaksi. Klien menjawab &quot;sekitar 2 hari&quot;, dan angka
+            ini TIDAK DAPAT DIGUNAKAN: dokumen pembukuan dan transaksi wajib disimpan 10 tahun
+            menurut UU KUP. Retensi 2 hari juga membuat proses pengembalian dana tidak mungkin
+            diverifikasi. Pertanyaan ini perlu dipisah — berapa lama data transaksi disimpan
+            (wajib 10 tahun), dan berapa lama data pribadi disimpan setelah akun ditutup
+          </Confirm>{' '}
           untuk memenuhi kewajiban hukum dan perpajakan. Data akun disimpan selama akun Anda
           aktif dan dihapus dalam waktu{' '}
           <Confirm>masa penghapusan setelah permintaan, misalnya 30 hari</Confirm> setelah
@@ -317,7 +345,7 @@ export function PrivacyPage() {
           Anda, mengakses dan memperoleh salinannya, memperbaiki data yang tidak akurat,
           mengakhiri pemrosesan, menghapus data, serta menarik persetujuan. Permintaan dapat
           diajukan melalui {company.email} dan kami tanggapi dalam waktu{' '}
-          <Confirm>waktu tanggap permintaan subjek data, misalnya 3x24 jam</Confirm>.
+          <strong>36 jam</strong>.
         </p>
 
         <h2>7. Pemberitahuan kegagalan pelindungan data</h2>
@@ -409,7 +437,11 @@ export function RefundPage() {
         <p>
           Pengajuan pengembalian dana disampaikan paling lambat{' '}
           <Confirm>
-            batas waktu pengajuan sejak tanggal pesanan, misalnya 7 hari kalender
+            batas waktu pengajuan. Klien menjawab 12 jam, namun angka ini bertentangan dengan
+            waktu tanggap keluhan 36 jam yang juga disanggupi klien: konsumen tidak mungkin
+            memperoleh tanggapan sebelum batas pengajuan berakhir. Batas pengajuan harus lebih
+            panjang daripada waktu tanggap, dan tetap tunduk pada hak konsumen menurut UU
+            8/1999
           </Confirm>{' '}
           sejak tanggal pesanan dibuat. Pengajuan setelah batas tersebut tetap kami tinjau
           secara kasuistis, namun tidak dijamin.
